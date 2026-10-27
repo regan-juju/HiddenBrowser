@@ -147,7 +147,7 @@ class UserPreferences @Inject constructor(
      *
      * @see UserPreferences.userAgent
      */
-    var userAgentChoice by preferences.intPreference(USER_AGENT, 1)
+    var userAgentChoice by preferences.intPreference(USER_AGENT, 2)
 
     /**
      * The custom user agent that should be used by the browser.
