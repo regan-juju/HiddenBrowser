@@ -35,7 +35,7 @@ public final class ThemeUtils {
      */
     @ColorInt
     public static int getPrimaryColor(@NonNull Context context) {
-        return getColor(context, R.attr.colorPrimary);
+        return getColor(context, androidx.appcompat.R.attr.colorPrimary);
     }
 
     /**
@@ -46,7 +46,7 @@ public final class ThemeUtils {
      */
     @ColorInt
     public static int getPrimaryColorDark(@NonNull Context context) {
-        return getColor(context, R.attr.colorPrimaryDark);
+        return getColor(context, androidx.appcompat.R.attr.colorPrimaryDark);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class ThemeUtils {
      */
     @ColorInt
     public static int getAccentColor(@NonNull Context context) {
-        return getColor(context, R.attr.colorAccent);
+        return getColor(context, androidx.appcompat.R.attr.colorAccent);
     }
 
     /**

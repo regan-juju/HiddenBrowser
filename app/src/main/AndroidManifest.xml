@@ -2,7 +2,6 @@
 <!-- Copyright 2014 A.C.R. Development -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="acr.browser.lightning"
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -10,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <uses-feature
         android:name="android.hardware.touchscreen"
@@ -36,6 +36,7 @@
             android:clearTaskOnLaunch="false"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/Theme.LightTheme"
@@ -126,6 +127,7 @@
             android:alwaysRetainTaskState="true"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
             android:process=":incognito"
@@ -142,6 +144,7 @@
             android:name=".settings.activity.SettingsActivity"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
+            android:exported="true"
             android:label="@string/settings"
             android:theme="@style/Theme.SettingsTheme">
             <intent-filter>
@@ -154,6 +157,7 @@
             android:name=".reading.activity.ReadingActivity"
             android:colorMode="wideColorGamut"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|keyboard"
+            android:exported="true"
             android:label="@string/reading_mode"
             android:theme="@style/Theme.SettingsTheme">
             <intent-filter>

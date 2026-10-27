@@ -42,6 +42,7 @@ import acr.browser.lightning.utils.*
 import acr.browser.lightning.view.*
 import acr.browser.lightning.view.SearchView
 import acr.browser.lightning.view.find.FindResults
+import android.Manifest
 import android.app.Activity
 import android.app.NotificationManager
 import android.content.ClipboardManager
@@ -206,6 +207,13 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
 
         if (isIncognito()) {
             incognitoNotification = IncognitoNotification(this, notificationManager)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                PermissionsManager.getInstance().requestPermissionsIfNecessaryForResult(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    null
+                )
+            }
         }
         tabsManager.addTabNumberChangedListener {
             if (isIncognito()) {

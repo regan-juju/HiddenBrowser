@@ -389,12 +389,10 @@ class LightningView(
 
             if (!isIncognito || Capabilities.FULL_INCOGNITO.isSupported) {
                 domStorageEnabled = true
-                setAppCacheEnabled(true)
                 databaseEnabled = true
                 cacheMode = WebSettings.LOAD_DEFAULT
             } else {
                 domStorageEnabled = false
-                setAppCacheEnabled(false)
                 databaseEnabled = false
                 cacheMode = WebSettings.LOAD_NO_CACHE
             }
@@ -406,13 +404,6 @@ class LightningView(
             allowFileAccess = true
             allowFileAccessFromFileURLs = false
             allowUniversalAccessFromFileURLs = false
-
-            getPathObservable("appcache")
-                .subscribeOn(databaseScheduler)
-                .observeOn(mainScheduler)
-                .subscribe { file ->
-                    setAppCachePath(file.path)
-                }
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 getPathObservable("geolocation")
@@ -852,7 +843,7 @@ class LightningView(
          */
         private var canTriggerLongPress = true
 
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
             val power = (velocityY * 100 / maxFling).toInt()
             if (power < -10) {
                 uiController.hideActionBar()

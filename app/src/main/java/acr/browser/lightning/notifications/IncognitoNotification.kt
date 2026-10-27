@@ -51,7 +51,9 @@ class IncognitoNotification(
         val incognitoNotification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_notification_incognito)
             .setContentTitle(context.resources.getQuantityString(R.plurals.notification_incognito_running_title, number, number))
-            .setContentIntent(PendingIntent.getActivity(context, 0, incognitoIntent, 0))
+            .setContentIntent(
+                PendingIntent.getActivity(context, 0, incognitoIntent, PendingIntent.FLAG_IMMUTABLE)
+            )
             .setContentText(context.getString(R.string.notification_incognito_running_message))
             .setAutoCancel(false)
             .setColor(ThemeUtils.getAccentColor(context))

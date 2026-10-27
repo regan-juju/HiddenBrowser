@@ -80,8 +80,9 @@ class LightningChromeClient(
             lightningView.titleInfo.setTitle(activity.getString(R.string.untitled))
         }
         uiController.tabChanged(lightningView)
-        if (view != null && view.url != null) {
-            uiController.updateHistory(title, view.url)
+        val url = view?.url
+        if (url != null) {
+            uiController.updateHistory(title, url)
         }
     }
 

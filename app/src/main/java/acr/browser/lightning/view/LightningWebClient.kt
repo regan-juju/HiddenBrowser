@@ -125,10 +125,11 @@ class LightningWebClient(
             uiController.setForwardButtonEnabled(view.canGoForward())
             view.postInvalidate()
         }
-        if (view.title == null || view.title.isEmpty()) {
+        val pageTitle = view.title
+        if (pageTitle.isNullOrEmpty()) {
             lightningView.titleInfo.setTitle(activity.getString(R.string.untitled))
         } else {
-            lightningView.titleInfo.setTitle(view.title)
+            lightningView.titleInfo.setTitle(pageTitle)
         }
         if (lightningView.invertPage) {
             view.evaluateJavascript(invertPageJs.provideJs(), null)
@@ -227,13 +228,17 @@ class LightningWebClient(
             setOnCancelListener { handler.cancel() }
             setPositiveButton(activity.getString(R.string.action_yes)) { _, _ ->
                 if (dontAskAgain.isChecked) {
-                    sslWarningPreferences.rememberBehaviorForDomain(webView.url, SslWarningPreferences.Behavior.PROCEED)
+                    webView.url?.let {
+                        sslWarningPreferences.rememberBehaviorForDomain(it, SslWarningPreferences.Behavior.PROCEED)
+                    }
                 }
                 handler.proceed()
             }
             setNegativeButton(activity.getString(R.string.action_no)) { _, _ ->
                 if (dontAskAgain.isChecked) {
-                    sslWarningPreferences.rememberBehaviorForDomain(webView.url, SslWarningPreferences.Behavior.CANCEL)
+                    webView.url?.let {
+                        sslWarningPreferences.rememberBehaviorForDomain(it, SslWarningPreferences.Behavior.CANCEL)
+                    }
                 }
                 handler.cancel()
             }
