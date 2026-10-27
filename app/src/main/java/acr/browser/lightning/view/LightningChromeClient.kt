@@ -23,8 +23,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.webkit.*
 import androidx.appcompat.app.AlertDialog
-import com.anthonycr.grant.PermissionsManager
-import com.anthonycr.grant.PermissionsResultAction
+import acr.browser.lightning.permissions.PermissionsManager
+import acr.browser.lightning.permissions.PermissionsResultAction
 import io.reactivex.Scheduler
 import javax.inject.Inject
 
@@ -153,7 +153,7 @@ class LightningChromeClient(
                 }.resizeAndShow()
             }
 
-            override fun onDenied(permission: String) =//TODO show message and/or turn off setting
+            override fun onDenied(permission: String?) =//TODO show message and/or turn off setting
                 Unit
         })
 

@@ -14,7 +14,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import acr.browser.lightning.BrowserApp;
 import acr.browser.lightning.R;
 import acr.browser.lightning.browser.ProxyChoice;
 import acr.browser.lightning.dialog.BrowserDialog;
@@ -24,8 +23,10 @@ import acr.browser.lightning.preference.DeveloperPreferences;
 import acr.browser.lightning.preference.UserPreferences;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.webkit.ProxyConfig;
+import androidx.webkit.ProxyController;
+import androidx.webkit.WebViewFeature;
 import info.guardianproject.netcipher.proxy.OrbotHelper;
-import info.guardianproject.netcipher.webkit.WebkitProxy;
 import kotlin.Pair;
 import kotlin.Unit;
 
@@ -152,11 +153,21 @@ public final class ProxyUtils {
         }
 
         try {
-            WebkitProxy.setProxy(BrowserApp.class.getName(), activity.getApplicationContext(), null, host, port);
+            setWebViewProxy(host, port);
         } catch (Exception e) {
             Log.d(TAG, "error enabling web proxying", e);
         }
 
+    }
+
+    private static void setWebViewProxy(@NonNull String host, int port) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)) {
+            return;
+        }
+        ProxyConfig proxyConfig = new ProxyConfig.Builder()
+            .addProxyRule(host + ':' + port)
+            .build();
+        ProxyController.getInstance().setProxyOverride(proxyConfig, Runnable::run, () -> { });
     }
 
     public boolean isProxyReady(@NonNull Activity activity) {
@@ -178,13 +189,20 @@ public final class ProxyUtils {
             initializeProxy(activity);
         } else {
             try {
-                WebkitProxy.resetProxy(BrowserApp.class.getName(), activity.getApplicationContext());
+                resetWebViewProxy();
             } catch (Exception e) {
                 Log.e(TAG, "Unable to reset proxy", e);
             }
 
             sI2PProxyInitialized = false;
         }
+    }
+
+    private static void resetWebViewProxy() {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.PROXY_OVERRIDE)) {
+            return;
+        }
+        ProxyController.getInstance().clearProxyOverride(Runnable::run, () -> { });
     }
 
     public void onStop() {

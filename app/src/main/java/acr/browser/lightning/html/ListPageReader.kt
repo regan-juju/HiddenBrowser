@@ -1,13 +1,14 @@
 package acr.browser.lightning.html
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * The store for the list view HTML.
  */
-@FileStream("app/src/main/html/list.html")
-interface ListPageReader {
+class ListPageReader @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideHtml(): String
+    fun provideHtml(): String =
+        assetManager.open("html/list.html").bufferedReader().use { it.readText() }
 
 }

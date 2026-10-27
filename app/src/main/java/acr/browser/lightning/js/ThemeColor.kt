@@ -1,13 +1,14 @@
 package acr.browser.lightning.js
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * Reads the theme color from the DOM.
  */
-@FileStream("app/src/main/js/ThemeColor.js")
-interface ThemeColor {
+class ThemeColor @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideJs(): String
+    fun provideJs(): String =
+        assetManager.open("js/ThemeColor.js").bufferedReader().use { it.readText() }
 
 }

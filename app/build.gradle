@@ -85,13 +85,13 @@ android {
 }
 
 jacoco {
-    toolVersion = '0.7.9' // See http://www.eclemma.org/jacoco/
+    toolVersion = '0.8.8' // See http://www.eclemma.org/jacoco/
 }
 
 dexcount {
     includeClasses = false
     includeFieldCount = false
-    format = "tree"
+    format = com.getkeepsafe.dexcount.OutputFormat.TREE
     orderByMethodCount = true
     verbose = false
 }
@@ -124,11 +124,6 @@ dependencies {
     // html parsing for reading mode
     implementation 'org.jsoup:jsoup:1.11.3'
 
-    // file reading
-    final def mezzanineVersion = '1.1.1'
-    implementation "com.anthonycr.mezzanine:mezzanine:$mezzanineVersion"
-    kapt "com.anthonycr.mezzanine:mezzanine-compiler:$mezzanineVersion"
-
     // dependency injection
     final def daggerVersion = '2.24'
     implementation "com.google.dagger:dagger:$daggerVersion"
@@ -139,9 +134,6 @@ dependencies {
     final def butterKnifeVersion = '10.1.0'
     implementation "com.jakewharton:butterknife:$butterKnifeVersion"
     kapt "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
-
-    // permissions
-    implementation 'com.anthonycr.grant:permissions:1.1.2'
 
     // proxy support
     implementation 'net.i2p.android:client:0.9.42'
@@ -155,11 +147,13 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
 
     // tor proxy
-    final def netCipherVersion = '2.0.0-alpha1'
-    implementation "info.guardianproject.netcipher:netcipher:$netCipherVersion"
-    implementation "info.guardianproject.netcipher:netcipher-webkit:$netCipherVersion"
-
-    implementation 'com.anthonycr.progress:animated-progress:1.0'
+    implementation 'info.guardianproject.netcipher:netcipher:2.1.0'
+    // Sets the process-wide WebView proxy for the Orbot/I2P/manual proxy options.
+    // Replaces netcipher-webkit, whose published 2.1.0 jar ships a stray
+    // info/guardianproject/netcipher/R.class that collides with netcipher's own,
+    // and which only ever wrapped this same WebView-proxy functionality via
+    // reflection before it was a public API.
+    implementation 'androidx.webkit:webkit:1.4.0'
 
     // memory leak analysis
     final def leakCanaryVersion = '1.6.3'
@@ -171,12 +165,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.2.0-alpha04'
 }
 
-kapt {
-    arguments {
-        arg("mezzanine.projectPath", project.rootDir)
-    }
-}
-
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -184,7 +172,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = '1.8'
         kotlinOptions {
-            freeCompilerArgs += ['-XXLanguage:+InlineClasses']
             freeCompilerArgs += ['-progressive']
         }
     }
@@ -202,10 +189,10 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testLightningPlusDebugUni
     final def kotlinDebugTree = fileTree(dir: "$buildDir/tmp/kotlin-classes/lightningPlusDebug", excludes: fileFilter)
     final def mainSrc = "${project.projectDir}/src/test/java"
 
-    sourceDirectories = files([mainSrc])
-    classDirectories = files([debugTree], [kotlinDebugTree])
-    executionData = fileTree(dir: "$buildDir", includes: [
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree], [kotlinDebugTree]))
+    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
             "jacoco/testLightningPlusDebugUnitTest.exec",
             "outputs/code-coverage/connected/*coverage.ec"
-    ])
+    ]))
 }

@@ -2,12 +2,6 @@ package acr.browser.lightning.di
 
 import acr.browser.lightning.device.BuildInfo
 import acr.browser.lightning.device.BuildType
-import acr.browser.lightning.html.ListPageReader
-import acr.browser.lightning.html.bookmark.BookmarkPageReader
-import acr.browser.lightning.html.homepage.HomePageReader
-import acr.browser.lightning.js.InvertPage
-import acr.browser.lightning.js.TextReflow
-import acr.browser.lightning.js.ThemeColor
 import acr.browser.lightning.log.AndroidLogger
 import acr.browser.lightning.log.Logger
 import acr.browser.lightning.log.NoOpLogger
@@ -29,7 +23,6 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.core.content.getSystemService
-import com.anthonycr.mezzanine.MezzanineGenerator
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Scheduler
@@ -171,24 +164,6 @@ class AppModule {
     @Provides
     @Singleton
     fun provideI2PAndroidHelper(application: Application): I2PAndroidHelper = I2PAndroidHelper(application)
-
-    @Provides
-    fun providesListPageReader(): ListPageReader = MezzanineGenerator.ListPageReader()
-
-    @Provides
-    fun providesHomePageReader(): HomePageReader = MezzanineGenerator.HomePageReader()
-
-    @Provides
-    fun providesBookmarkPageReader(): BookmarkPageReader = MezzanineGenerator.BookmarkPageReader()
-
-    @Provides
-    fun providesTextReflow(): TextReflow = MezzanineGenerator.TextReflow()
-
-    @Provides
-    fun providesThemeColor(): ThemeColor = MezzanineGenerator.ThemeColor()
-
-    @Provides
-    fun providesInvertPage(): InvertPage = MezzanineGenerator.InvertPage()
 
 }
 

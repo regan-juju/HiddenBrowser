@@ -1,13 +1,14 @@
 package acr.browser.lightning.js
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * Force the text to reflow.
  */
-@FileStream("app/src/main/js/TextReflow.js")
-interface TextReflow {
+class TextReflow @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideJs(): String
+    fun provideJs(): String =
+        assetManager.open("js/TextReflow.js").bufferedReader().use { it.readText() }
 
 }

@@ -1,13 +1,14 @@
 package acr.browser.lightning.html.bookmark
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * The store for the bookmarks HTML.
  */
-@FileStream("app/src/main/html/bookmarks.html")
-interface BookmarkPageReader {
+class BookmarkPageReader @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideHtml(): String
+    fun provideHtml(): String =
+        assetManager.open("html/bookmarks.html").bufferedReader().use { it.readText() }
 
 }

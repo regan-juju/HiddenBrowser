@@ -1,13 +1,14 @@
 package acr.browser.lightning.js
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * Invert the color of the page.
  */
-@FileStream("app/src/main/js/InvertPage.js")
-interface InvertPage {
+class InvertPage @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideJs(): String
+    fun provideJs(): String =
+        assetManager.open("js/InvertPage.js").bufferedReader().use { it.readText() }
 
 }

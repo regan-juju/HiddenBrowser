@@ -31,15 +31,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tabs_toolbar_container" />
 
-    <com.anthonycr.progress.AnimatedProgressBar
+    <ProgressBar
         android:id="@+id/progress_view"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="@dimen/progress_bar_height"
         android:background="@color/transparent"
-        app:bidirectionalAnimate="false"
+        android:indeterminate="false"
+        android:max="100"
+        android:progressTint="?attr/colorAccent"
         app:layout_constraintBottom_toBottomOf="@id/toolbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:progressColor="?attr/colorAccent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

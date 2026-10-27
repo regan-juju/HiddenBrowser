@@ -1,13 +1,14 @@
 package acr.browser.lightning.html.homepage
 
-import com.anthonycr.mezzanine.FileStream
+import android.content.res.AssetManager
+import javax.inject.Inject
 
 /**
  * The store for the homepage HTML.
  */
-@FileStream("app/src/main/html/homepage.html")
-interface HomePageReader {
+class HomePageReader @Inject constructor(private val assetManager: AssetManager) {
 
-    fun provideHtml(): String
+    fun provideHtml(): String =
+        assetManager.open("html/homepage.html").bufferedReader().use { it.readText() }
 
 }

@@ -21,8 +21,8 @@ import android.app.Application
 import android.os.Bundle
 import android.os.Environment
 import androidx.appcompat.app.AlertDialog
-import com.anthonycr.grant.PermissionsManager
-import com.anthonycr.grant.PermissionsResultAction
+import acr.browser.lightning.permissions.PermissionsManager
+import acr.browser.lightning.permissions.PermissionsResultAction
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -105,7 +105,7 @@ class BookmarkSettingsFragment : AbstractSettingsFragment() {
                         }
                 }
 
-                override fun onDenied(permission: String) {
+                override fun onDenied(permission: String?) {
                     val activity = activity
                     if (activity != null && !activity.isFinishing && isAdded) {
                         Utils.createInformativeDialog(activity, R.string.title_error, R.string.bookmark_export_failure)
@@ -123,7 +123,7 @@ class BookmarkSettingsFragment : AbstractSettingsFragment() {
                     showImportBookmarkDialog(null)
                 }
 
-                override fun onDenied(permission: String) {
+                override fun onDenied(permission: String?) {
                     //TODO Show message
                 }
             })

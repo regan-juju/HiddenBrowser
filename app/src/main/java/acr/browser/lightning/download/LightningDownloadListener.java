@@ -11,8 +11,8 @@ import android.text.format.Formatter;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 
-import com.anthonycr.grant.PermissionsManager;
-import com.anthonycr.grant.PermissionsResultAction;
+import acr.browser.lightning.permissions.PermissionsManager;
+import acr.browser.lightning.permissions.PermissionsResultAction;
 
 import javax.inject.Inject;
 

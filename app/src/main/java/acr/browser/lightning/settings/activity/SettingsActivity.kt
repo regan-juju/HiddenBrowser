@@ -13,7 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import com.anthonycr.grant.PermissionsManager
+import acr.browser.lightning.permissions.PermissionsManager
 import javax.inject.Inject
 
 class SettingsActivity : ThemableSettingsActivity() {
