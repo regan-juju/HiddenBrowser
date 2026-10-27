@@ -28,7 +28,6 @@ import acr.browser.lightning.html.bookmark.BookmarkPageFactory
 import acr.browser.lightning.html.history.HistoryPageFactory
 import acr.browser.lightning.html.homepage.HomePageFactory
 import acr.browser.lightning.icon.TabCountView
-import acr.browser.lightning.interpolator.BezierDecelerateInterpolator
 import acr.browser.lightning.log.Logger
 import acr.browser.lightning.notifications.IncognitoNotification
 import acr.browser.lightning.reading.activity.ReadingActivity
@@ -76,6 +75,9 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.dynamicanimation.animation.DynamicAnimation
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
@@ -163,6 +165,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
     private var webPageBitmap: Bitmap? = null
     private val backgroundDrawable = ColorDrawable()
     private var incognitoNotification: IncognitoNotification? = null
+    private var toolbarSpringAnimation: SpringAnimation? = null
 
     private var presenter: BrowserPresenter? = null
     private var tabsView: TabsView? = null
@@ -1624,6 +1627,27 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
     }
 
     /**
+     * Animates the toolbar to [targetTranslationY] using a spring, giving it the settling
+     * bounce feel of iOS Safari's toolbar rather than a fixed-duration easing curve. The
+     * WebView is translated in lockstep on every frame of the spring.
+     */
+    private fun animateToolbarTo(targetTranslationY: Float) {
+        val height = toolbar_layout.height.takeIf { it > 0 } ?: run {
+            toolbar_layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+            toolbar_layout.measuredHeight
+        }
+        toolbarSpringAnimation?.cancel()
+        toolbarSpringAnimation = SpringAnimation(toolbar_layout, DynamicAnimation.TRANSLATION_Y).apply {
+            spring = SpringForce(targetTranslationY).apply {
+                stiffness = SpringForce.STIFFNESS_MEDIUM
+                dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
+            }
+            addUpdateListener { _, value, _ -> setWebViewTranslation(height + value) }
+            start()
+        }
+    }
+
+    /**
      * Hide the ActionBar using an animation if we are in full-screen
      * mode. This method also re-parents the ActionBar if its parent is
      * incorrect so that the animation can happen correctly.
@@ -1635,16 +1659,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
 
             val height = toolbar_layout.height
             if (toolbar_layout.translationY > -0.01f) {
-                val hideAnimation = object : Animation() {
-                    override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                        val trans = interpolatedTime * height
-                        toolbar_layout.translationY = -trans
-                        setWebViewTranslation(height - trans)
-                    }
-                }
-                hideAnimation.duration = 250
-                hideAnimation.interpolator = BezierDecelerateInterpolator()
-                content_frame.startAnimation(hideAnimation)
+                animateToolbarTo(-height.toFloat())
             }
         }
     }
@@ -1666,18 +1681,8 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
                 height = toolbar_layout.measuredHeight
             }
 
-            val totalHeight = height
             if (toolbar_layout.translationY < -(height - 0.01f)) {
-                val show = object : Animation() {
-                    override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
-                        val trans = interpolatedTime * totalHeight
-                        toolbar_layout.translationY = trans - totalHeight
-                        setWebViewTranslation(trans)
-                    }
-                }
-                show.duration = 250
-                show.interpolator = BezierDecelerateInterpolator()
-                content_frame.startAnimation(show)
+                animateToolbarTo(0f)
             }
         }
     }
