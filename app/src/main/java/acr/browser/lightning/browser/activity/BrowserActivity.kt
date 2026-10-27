@@ -777,7 +777,9 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
         if (toolbar_layout.parent != ui_layout) {
             (toolbar_layout.parent as ViewGroup?)?.removeView(toolbar_layout)
 
-            ui_layout.addView(toolbar_layout, 0)
+            // The toolbar now docks at the bottom of the screen, so it belongs at the end
+            // of ui_layout rather than index 0.
+            ui_layout.addView(toolbar_layout)
             ui_layout.requestLayout()
         }
         setWebViewTranslation(0f)
@@ -787,10 +789,17 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
         if (toolbar_layout.parent != content_frame) {
             (toolbar_layout.parent as ViewGroup?)?.removeView(toolbar_layout)
 
-            content_frame.addView(toolbar_layout)
+            content_frame.addView(
+                toolbar_layout,
+                FrameLayout.LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT,
+                    Gravity.BOTTOM
+                )
+            )
             content_frame.requestLayout()
         }
-        setWebViewTranslation(toolbar_layout.height.toFloat())
+        setWebViewTranslation(0f)
     }
 
     private fun setWebViewTranslation(translation: Float) =
@@ -906,7 +915,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
 
         content_frame.addView(view, 0, MATCH_PARENT)
         if (isFullScreen) {
-            view.translationY = toolbar_layout.height + toolbar_layout.translationY
+            view.translationY = toolbar_layout.translationY
         } else {
             view.translationY = 0f
         }
@@ -1006,7 +1015,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
         if (isFullScreen) {
             showActionBar()
             toolbar_layout.translationY = 0f
-            setWebViewTranslation(toolbar_layout.height.toFloat())
+            setWebViewTranslation(0f)
         }
 
         invalidateOptionsMenu()
@@ -1025,7 +1034,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
                 height = dimen(toolbarSize)
             }
             toolbar.minimumHeight = toolbarSize
-            toolbar.doOnLayout { setWebViewTranslation(toolbar_layout.height.toFloat()) }
+            toolbar.doOnLayout { setWebViewTranslation(toolbar_layout.translationY) }
             toolbar.requestLayout()
         }
 
@@ -1629,20 +1638,20 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
     /**
      * Animates the toolbar to [targetTranslationY] using a spring, giving it the settling
      * bounce feel of iOS Safari's toolbar rather than a fixed-duration easing curve. The
-     * WebView is translated in lockstep on every frame of the spring.
+     * toolbar now lives at the bottom of the screen, so the WebView is translated by exactly
+     * the toolbar's own translation on every frame of the spring: as the toolbar slides down
+     * and off-screen, the content slides down by the same amount to cover the gap it leaves
+     * in the layout (the toolbar's reserved space in the LinearLayout doesn't shrink, only
+     * its drawn position moves).
      */
     private fun animateToolbarTo(targetTranslationY: Float) {
-        val height = toolbar_layout.height.takeIf { it > 0 } ?: run {
-            toolbar_layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-            toolbar_layout.measuredHeight
-        }
         toolbarSpringAnimation?.cancel()
         toolbarSpringAnimation = SpringAnimation(toolbar_layout, DynamicAnimation.TRANSLATION_Y).apply {
             spring = SpringForce(targetTranslationY).apply {
                 stiffness = SpringForce.STIFFNESS_MEDIUM
                 dampingRatio = SpringForce.DAMPING_RATIO_LOW_BOUNCY
             }
-            addUpdateListener { _, value, _ -> setWebViewTranslation(height + value) }
+            addUpdateListener { _, value, _ -> setWebViewTranslation(value) }
             start()
         }
     }
@@ -1657,9 +1666,14 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
             if (toolbar_layout == null || content_frame == null)
                 return
 
-            val height = toolbar_layout.height
-            if (toolbar_layout.translationY > -0.01f) {
-                animateToolbarTo(-height.toFloat())
+            var height = toolbar_layout.height
+            if (height == 0) {
+                toolbar_layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+                height = toolbar_layout.measuredHeight
+            }
+
+            if (toolbar_layout.translationY < (height - 0.01f)) {
+                animateToolbarTo(height.toFloat())
             }
         }
     }
@@ -1675,13 +1689,7 @@ abstract class BrowserActivity : ThemableBrowserActivity(), BrowserView, UIContr
             if (toolbar_layout == null)
                 return
 
-            var height = toolbar_layout.height
-            if (height == 0) {
-                toolbar_layout.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
-                height = toolbar_layout.measuredHeight
-            }
-
-            if (toolbar_layout.translationY < -(height - 0.01f)) {
+            if (toolbar_layout.translationY > 0.01f) {
                 animateToolbarTo(0f)
             }
         }
